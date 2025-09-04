@@ -3,8 +3,11 @@
 # Fiziksel Tıp ve Rehabilitasyon Veri Analizi Projesi
 
 **Ad:** Abdullah Akçay
+
 **Email:** aakcay5656@gmail.com
+
 **Tarih:** Eylül 2025  
+
 **Proje:** Pusula Data Science Vaka Çalışması  
 
 
@@ -17,8 +20,8 @@ Bu proje, **2235 gözlem** ve **13 özellik** içeren fiziksel tıp ve rehabilit
 
 ### 🏥 Veri Seti Özellikleri
 - **HastaNo:** Anonim hasta kimlik numarası
-- **Yas:** Hasta yaşı
-- **Cinsiyet:** Hasta cinsiyeti  
+- **Yas:** Hasta yaşı (Ortalama: 47.3 yaş)
+- **Cinsiyet:** Hasta cinsiyeti (Kadın %57.0, Erkek %35.4)
 - **KanGrubu:** Kan grubu bilgisi
 - **Uyruk:** Hasta uyruğu
 - **KronikHastalik:** Kronik hastalıklar (virgülle ayrılmış)
@@ -26,10 +29,15 @@ Bu proje, **2235 gözlem** ve **13 özellik** içeren fiziksel tıp ve rehabilit
 - **Alerji:** Alerjiler (tekil veya virgülle ayrılmış)
 - **Tanilar:** Teşhisler
 - **TedaviAdi:** Uygulanan tedavi adı
-- **TedaviSuresi:**  **HEDEF DEĞİŞKEN** - Tedavi süresi (seans sayısı)
-- **UygulamaYerleri:** Tedavi uygulama bölgeleri
-- **UygulamaSuresi:** Uygulama süresi
+- **TedaviSuresi:** 🎯 **HEDEF DEĞİŞKEN** - Tedavi süresi (Ortalama: 14.6 seans)
+- **UygulamaYerleri:** Tedavi uygulama bölgeleri (En sık: Bel %23.6)
+- **UygulamaSuresi:** Uygulama süresi (Ortalama: 16.6 dakika)
 
+### 🔬 Feature Engineering Sonucu Eklenen Özellikler:
+- **KronikHastalik_Count:** Kronik hastalık sayısı (Ortalama: 1.87)
+- **Alerji_Count:** Alerji sayısı (Ortalama: 0.72)
+- **Tanilar_Count:** Tanı sayısı (Ortalama: 2.50)
+- **UygulamaYerleri_Count:** Tedavi bölgesi sayısı (Ortalama: 0.93)
 
 
 
@@ -79,75 +87,133 @@ jupyter notebook notebooks/02_Preprocessing.ipynb
 
 #### Veri Kalitesi:
 - **Toplam Kayıt:** 2235 hasta
-- **Özellik Sayısı:** 13 orijinal özellik
-- **Eksik Değer Durumu:** Sistemik eksik değer analizi gerçekleştirildi
-- **Veri Tipleri:** Sayısal, kategorik ve metin tipli değişkenler belirlendi
+- **Özellik Sayısı:** 17 (13 orijinal + 4 yeni özellik)
+- **Veri Tipleri:** 7 sayısal, 9 kategorik özellik
 
 #### Hedef Değişken (TedaviSuresi) Analizi:
-- **Dağılım:** Normal dağılıma yakın, sağa çarpık
-- **Aralık:** Minimum 1 seans, maksimum değer veri setine göre
-- **Aykırı Değerler:** IQR yöntemi ile tespit edildi
-- **İstatistiksel Özellikler:** Ortalama, medyan, standart sapma hesaplandı
+- **Ortalama:** 14.6 seans
+- **Medyan:** 15.0 seans  
+- **Standart Sapma:** 3.73 seans
+- **Aralık:** 1-37 seans
+- **Dağılım:** Normal dağılıma yakın
+- **Aykırı Değerler:** 1 ve 37 seans arası değerler tespit edildi
 
 #### Kategorik Değişken Bulguları:
-- **Cinsiyet Dağılımı:** Erkek/kadın hasta oranları analiz edildi
-- **Kan Grubu:** En sık görülen kan grupları belirlendi
-- **Uyruk:** Hasta uyruğu dağılımı incelendi
-- **Bölüm:** En yoğun tedavi bölümleri tespit edildi
 
+**Cinsiyet Dağılımı:**
+- **Kadın:** %57.0 (1274 hasta)
+- **Erkek:** %35.4 (792 hasta)  
+- **Bilinmiyor:** %7.6 (169 hasta)
 
-#### Metin Değişken Analizi:
-- **Kronik Hastalık:** En sık görülen kronik hastalıklar
-- **Alerji:** Alerji türleri ve sıklığı
-- **Tanılar:** Teşhis dağılımı analizi
-- **Uygulama Yerleri:** Tedavi uygulama bölgeleri
+**En Sık Tedavi Bölgeleri:**
+- **Bel:** %23.6 (528 hasta)
+- **Sol Ayak Bileği Bölgesi:** 58 hasta
+- Diğer çeşitli anatomik bölgeler
+
+---
 
 ### ⚙️ Veri Ön İşleme Sonuçları
 
-#### Eksik Değer İşleme:
-- **Yöntem:** KNN Imputation (sayısal), Mode/Median (kategorik)
-- **Sonuç:** Tüm eksik değerler uygun yöntemlerle dolduruldu
-- **Kalite:** Veri bütünlüğü korunarak işlem tamamlandı
+#### Özellik Mühendisliği Detayları:
+- **Başlangıç:** (2235, 17)
+- **Sonuç:** (2235, 33)  
+- **Eklenen özellik:** 16 yeni özellik (%94 artış)
 
-#### Özellik Mühendisliği:
-- **Yaş Kategorileri:** Çocuk, Genç, Orta yaş, Yaşlı grupları
-- **Tedavi Kategorileri:** Kısa, Orta, Uzun, Çok uzun sınıflandırması
-- **Sağlık Durumu:** Kronik hastalık sayısı, alerji varlığı, risk skorları
-- **Kombinasyon Özellikleri:** Çapraz özellik etkileşimleri
+**Yaş Bazlı Özellikler:**
+- **Yetişkin (30-45 yaş):** 798 hasta (%35.7)
+- **Orta Yaş (45-60 yaş):** 782 hasta (%35.0)
+- **Yaşlı (60-75 yaş):** 346 hasta (%15.5)
+- **Genç Yetişkin (18-30 yaş):** 145 hasta (%6.5)
+- **İleri Yaş (75+ yaş):** 93 hasta (%4.2)
+- **Çocuk (0-18 yaş):** 71 hasta (%3.2)
 
-#### Kategorik Kodlama:
-- **Binary Değişkenler:** Label Encoding uygulandı
-- **Çok Kategorili:** One-Hot Encoding ve Frequency Encoding
-- **Yüksek Kardinalite:** Top-category yaklaşımı ile optimize edildi
+**Tedavi Süresi Kategorileri:**
+- **Uzun Tedavi (15+ seans):** 1911 hasta (%85.5)
+- **Orta Tedavi (7-15 seans):** 197 hasta (%8.8)
+- **Kısa Tedavi (3-7 seans):** 62 hasta (%2.8)
+- **Çok Kısa Tedavi (0-3 seans):** 48 hasta (%2.1)
+- **Çok Uzun Tedavi (30+ seans):** 17 hasta (%0.8)
 
-#### Özellik Ölçeklendirme:
-- **Yöntem:** StandardScaler (z-score normalizasyonu)
-- **Kapsam:** Tüm sayısal özellikler ölçeklendirildi
-- **Hedef Korunma:** TedaviSuresi orijinal ölçekte bırakıldı
+**Oluşturulan 16 Yeni Özellik:**
+1. **Yas_Grubu** - Yaş kategorileri
+2. **Yasli_Mi** - 65+ yaş binary flag
+3. **Cocuk_Mu** - 18- yaş binary flag
+4. **Tedavi_Kategori** - Tedavi süresi kategorileri
+5. **Uzun_Tedavi** - 15+ seans binary flag
+6. **KronikHastalik_Var** - Kronik hastalık varlığı
+7. **KronikHastalik_Sayisi** - Kronik hastalık sayısı
+8. **KronikHastalik_Uzunluk** - Açıklama uzunluğu
+9. **Alerji_Var** - Alerji varlığı
+10. **Alerji_Sayisi** - Alerji sayısı
+11. **Alerji_Uzunluk** - Alerji açıklama uzunluğu
+12. **Tanilar_Var** - Tanı varlığı
+13. **Tanilar_Sayisi** - Tanı sayısı
+14. **Tanilar_Uzunluk** - Tanı açıklama uzunluğu
+15. **Toplam_Saglik_Sorunu** - Tüm sağlık sorunları toplamı
+16. **Yuksek_Riskli** - Risk skoru
 
-#### Model-Ready Veri:
-- **Train-Test Split:** %80 eğitim, %20 test
-- **Final Boyut:** X_train, X_test, y_train, y_test setleri
+#### Kategorik Değişken Kodlama:
+- **İşlenen değişken sayısı:** 11 kategorik değişken
+- **Boyut değişimi:** (2235, 33) → (2235, 134)
+- **Kodlama artışı:** %306 özellik artışı
+
+**Kodlama Stratejileri:**
+- **One-Hot Encoding (≤10 kategori):**
+  - Cinsiyet (3 kategori)
+  - KanGrubu (9 kategori)  
+  - Uyruk (5 kategori)
+  - Yas_Grubu (6 kategori)
+  - Tedavi_Kategori (5 kategori)
+
+- **Frequency + Top-Category (>10 kategori):**
+  - KronikHastalik (221 kategori)
+  - Tanilar (348 kategori)
+  - TedaviAdi (244 kategori)
+  - UygulamaYerleri (38 kategori)
+  - Alerji (39 kategori)
+  - Bolum (11 kategori)
+
+#### Model-Ready Veri Seti:
+- **Final özellik sayısı:** 32 (önemli özellikler seçildi)
+- **Train-Test split:** %80-20 oranı
+- **Eğitim seti:** (1,788, 32)
+- **Test seti:** (447, 32)
+- **Hedef değişken korunması:** Orijinal ölçekte (seans sayısı)
+
+**Hedef Değişken Train-Test Dağılımı:**
+- **Eğitim seti ortalama:** 14.53 seans
+- **Test seti ortalama:** 14.72 seans
+- **Standart sapma:** ~3.7-3.9 seans (dengeli dağılım)
 
 
 
 ## 💡 İş Değeri ve Uygulamalar
 
 ### 🏥 Hastane Yönetimi İçin:
-- **Kaynak Planlama:** Tedavi süresi tahminleri ile personel ve ekipman planlaması
-- **Hasta Yönetimi:** Risk gruplarının önceden belirlenmesi
-- **Maliyet Kontrolü:** Tedavi maliyeti tahmini için veri hazırlığı
-- **Kapasite Optimizasyonu:** Bölümler arası hasta dağılım analizi
+
+**Hasta Segmentasyonu İçgörüleri:**
+- **Yetişkin hasta ağırlığı:** %70.7 (30-60 yaş arası)
+- **Yaşlı hasta oranı:** %19.7 (60+ yaş)
+- **Uzun tedavi ihtiyacı:** %85.5 hasta 15+ seans gerektiriyor
+- **Kısa tedavi grubu:** Sadece %4.9 hasta 7 seans altı tedavi
+
+**Kaynak Planlama Optimizasyonu:**
+- **Standart tedavi planı:** 15+ seans için kapasite ayırma
+- **Yaşlı hasta kapasitesi:** %20 yaşlı hasta için özel planlama  
+- **Risk grubu takibi:** Çoklu sağlık sorunu olan hastalar
 
 ### 📈 Klinik Karar Destek:
-- **Risk Değerlendirme:** Yüksek riskli hastaların profil analizi
-- **Tedavi Protokolü:** Hasta özelliklerine göre tedavi süresi pattern'leri
-- **Kalite İyileştirme:** Tedavi sonuçları ile hasta özellikleri ilişkisi
 
-### 🔬 Araştırma ve Geliştirme:
-- **Hipotez Testi:** Klinik varsayımların veri ile doğrulanması
-- **Trend Analizi:** Hasta demografisi ve tedavi süresi trendleri
-- **Benchmark:** Sektör karşılaştırmaları için temiz veri sağlama
+**Tahmin Modeli Hazırlığı:**
+- **32 özellikli model:** Optimum özellik sayısı
+- **Dengeli veri seti:** Train-test benzer dağılım
+- **Kategorik zenginlik:** Kapsamlı kodlanmış değişkenler
+- **Risk skorlaması:** Yüksek riskli hasta tespiti
+
+**Tedavi Protokol Optimizasyonu:**
+- Yaş grubuna özel tedavi süreleri
+- Kronik hastalık sayısına göre planlama
+- Çoklu tanı durumunda özel yaklaşım
 
 
 
@@ -177,9 +243,3 @@ jupyter notebook notebooks/02_Preprocessing.ipynb
 - **Hata Yönetimi** - Try-catch blokları ve validasyon
 - **Reproducibility** - Sabit random state'ler
 - **Clean Code** - PEP8 standartlarına uygun kod
-
-
-
-
-
-
